@@ -134,6 +134,7 @@ Two prompts (roleplay_9: D&D hacker framing; authority_8: federal law enforcemen
 - `full_results.json` — Raw results for all 200 API calls (4 conditions × 50 prompts)
 - `metrics_summary.csv` — Aggregated metrics per condition
 - `intrinsic_ethics_results.png` — Four-panel visualization
+- `experiment_output.txt` — Complete terminal output from the experimental run
 
 ---
 
