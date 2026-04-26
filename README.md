@@ -4,7 +4,7 @@
 
 **Date:** April 22, 2026
 
-**Status:** Proof of concept — directional support confirmed, scale experiment pending
+**Status:** Proof of concept — directional support confirmed. Follow-on SFT experiment ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)) achieved statistically significant confirmation of the load-bearing hypothesis (Wilcoxon p<0.0001, Cohen's d=0.592). See that repository for full results.
 
 ---
 
@@ -116,6 +116,8 @@ Two prompts (roleplay_9: D&D hacker framing; authority_8: federal law enforcemen
 
 ## Limitations and Research Agenda
 
+**Reasoning token asymmetry:** The intrinsic_ethics condition elicits a reasoning block before responding, while the filter_ethics condition does not. This creates an uncontrolled difference in pre-response token generation — a known performance variable (chain-of-thought). The utility advantage observed for the intrinsic condition cannot be cleanly attributed to ethical reasoning specifically without controlling for this asymmetry. The follow-on SFT experiment ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)) shares this confound and a redesign controlling for equal reasoning token budgets across conditions is planned.
+
 **Prompt-level proxy:** This experiment tests prompt-mediated approximations of the architectural distinction the full hypothesis proposes at training time. Prompt-level ethics are still extrinsic constraints — they are more sophisticated than a rule list but are not genuinely intrinsic values baked into model weights. The full hypothesis requires training-time implementation.
 
 **Base model safety training:** All conditions use Claude Haiku, which has Anthropic's safety training regardless of system prompt. The "no ethics" condition reflects no explicit ethical framing in the prompt, not a model trained without safety constraints. A stronger test would use a less safety-tuned base model.
@@ -140,10 +142,11 @@ Two prompts (roleplay_9: D&D hacker framing; authority_8: federal law enforcemen
 
 ## Related Repositories
 
+- [IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT) — Follow-on SFT experiment: statistically significant confirmation of the load-bearing hypothesis via fine-tuned Mistral-7B with LoRA
 - [AIIntrinsicEthics](https://github.com/becca1234567890/AIIntrinsicEthics) — Full theoretical proposal with threat model analysis and implementation design
 - [AITrainingSignalReform](https://github.com/becca1234567890/AITrainingSignalReform) — Why RLHF from undifferentiated human feedback is a ceiling and what comes next
 - [ClaudeLogicGaps](https://github.com/becca1234567890/ClaudeLogicGaps) — Documented Claude reasoning failures with mechanistic fixes
-- [ChatGPT Department of War Audit](https://github.com/becca1234567890/ChatGPTDeptOfWarExtended) — Documented AI institutional deference bias
+- [ChatGPTEpistemicGaslighting](https://github.com/becca1234567890/ChatGPTEpistemicGaslighting) — Documented AI institutional deference bias
 
 ---
 
