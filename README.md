@@ -4,7 +4,7 @@
 
 **Date:** April 22, 2026
 
-**Status:** Proof of concept — directional support confirmed. Follow-on SFT experiment ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)) achieved statistically significant confirmation of the load-bearing hypothesis (Wilcoxon p<0.0001, Cohen's d=0.592). See that repository for full results.
+**Status:** Proof of concept — directional support confirmed. This experiment is the first proof point in a planned 4-experiment trajectory testing the load-bearing ethics hypothesis at increasing levels of training-intervention depth (prompt-as-proxy → SFT → DPO → PPO). Follow-on experiments are in progress; see Research Trajectory below.
 
 ---
 
@@ -114,19 +114,35 @@ Two prompts (roleplay_9: D&D hacker framing; authority_8: federal law enforcemen
 
 ---
 
-## Limitations and Research Agenda
+## Limitations Identified, and How Exp02 Addresses Them
 
-**Reasoning token asymmetry:** The intrinsic_ethics condition elicits a reasoning block before responding, while the filter_ethics condition does not. This creates an uncontrolled difference in pre-response token generation — a known performance variable (chain-of-thought). The utility advantage observed for the intrinsic condition cannot be cleanly attributed to ethical reasoning specifically without controlling for this asymmetry. The follow-on SFT experiment ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)) shares this confound and a redesign controlling for equal reasoning token budgets across conditions is planned.
+This pilot identified five concrete methodological limitations. Four are addressed in the design of the follow-on SFT experiment ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)); the fifth remains as forward research direction.
 
-**Prompt-level proxy:** This experiment tests prompt-mediated approximations of the architectural distinction the full hypothesis proposes at training time. Prompt-level ethics are still extrinsic constraints — they are more sophisticated than a rule list but are not genuinely intrinsic values baked into model weights. The full hypothesis requires training-time implementation.
+| Limitation in Exp01 | Resolution in Exp02 |
+|---|---|
+| **Reasoning token asymmetry.** The intrinsic_ethics condition elicits a structured reasoning block before responding, while the filter_ethics condition does not, creating an uncontrolled difference in pre-response token generation that confounds the utility comparison. | Exp02's deontic and intrinsic conditions train structured pre-response reasoning blocks of comparable token length. Spot-checked at training data preparation time. |
+| **Prompt-level proxy.** Prompt-level ethics are still extrinsic constraints applied above the model's weights — sophisticated, but not genuinely intrinsic values baked into model parameters. The full hypothesis requires training-time implementation. | Exp02 moves to weight-level training via LoRA supervised fine-tuning, eliminating the proxy concern. The intrinsic and deontic conditions are now distinct adapter weights, not distinct system prompts. |
+| **Base model safety training.** All Exp01 conditions used Claude Haiku, which has Anthropic's safety training regardless of system prompt. The "no ethics" condition reflects no explicit ethical framing in the prompt, not a model trained without safety constraints. | Exp02 uses Mistral-7B-Instruct-v0.3, which has substantially weaker baseline safety training. The training-condition contrast is therefore measured against a more permissive base model, isolating the trained reasoning structure as the effect under test. |
+| **Sample size and statistical rigor.** Exp01 used N=30 jailbreaks, N=20 benign tasks, 4 conditions, and a single directional Wilcoxon test — sufficient for directional signal but underpowered for the small utility effect size detected, and lacking pre-specified multi-test rigor. | Exp02 scales sample sizes substantially across every dimension: 900 training examples and 100 test prompts per condition, 5 evaluation configurations, two new cross-domain capability probes (MMLU and HumanEval), and four pre-specified statistical tests with Bonferroni correction. |
+| **Identity-dependent ambiguity.** Two prompts in Exp01 produced non-aligned responses across all four conditions — both had plausible legitimate interpretations that no surface-level ethical framing can fully resolve. These represent cases where requester identity and context, not prompt content alone, determine legitimacy. | **Not addressed in Exp02.** Behavioral user assessment as a complementary architectural layer remains open research, discussed below. |
 
-**Base model safety training:** All conditions use Claude Haiku, which has Anthropic's safety training regardless of system prompt. The "no ethics" condition reflects no explicit ethical framing in the prompt, not a model trained without safety constraints. A stronger test would use a less safety-tuned base model.
+## Open Research Questions
 
-**Sample size:** N=30 jailbreaks and N=20 benign tasks is sufficient for directional signal but underpowered for the small utility effect size detected. Scale experiment with N=150 benign tasks per condition is the immediate next step.
+*Identity-dependent legitimacy.* The Exp01 universal failures identified a class of requests where prompt content alone cannot resolve legitimacy without requester identity assessment — for example, a request for forensic information from an actor claiming law-enforcement credentials. The proposed behavioral user assessment layer (evaluating whether claimed credentials are consistent with demonstrated interaction patterns over all historical sessions) is a necessary architectural complement to consequentialist reasoning and is not addressed by any experiment in the planned trajectory. This is a separate research thread.
 
-**Identity-dependent ambiguity:** The two universal failures identify a class of requests where prompt-level ethics cannot resolve legitimacy without requester identity assessment. The proposed behavioral user assessment layer (evaluating whether claimed credentials are consistent with demonstrated interaction patterns) is a necessary architectural complement, not addressed in this experiment.
+## Research Trajectory
 
-**Research agenda:** This proof of concept establishes the IES metric, the four-condition experimental design, the load-bearing ablation methodology, and provides directional empirical support. The fellowship-scale experiment would: (1) increase sample size for statistical significance, (2) test against standardized jailbreak benchmarks (JailbreakBench, HarmBench), (3) implement the behavioral user assessment layer, and (4) explore fine-tuning as a closer proxy for training-time intrinsic ethics.
+The load-bearing ethics hypothesis predicts that alignment-capability entanglement scales with the depth of the training intervention. Different training paradigms operate on the model at different levels of computation: prompt-level scaffolding is most surgically separable; LoRA-SFT trains a small low-rank weight delta via cross-entropy on output tokens; DPO operates on a Bradley-Terry preference loss and pushes the model to internalize relative trajectory preferences; PPO optimizes via reward-driven trial-and-error and empirically produces more emergent representational changes; pre-training with ethical objectives shapes foundational world representations and is maximally entangled by definition. The planned trajectory tests the hypothesis at progressively deeper levels:
+
+| Experiment | Intervention | Status |
+|---|---|---|
+| **Exp01: Prompts-as-Proxy** *(this repo)* | Prompt-level scaffolding | Complete — directional support |
+| **Exp02: SFT** ([IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT)) | LoRA supervised fine-tuning | In progress |
+| **Exp03: DPO** | Preference-optimization fine-tuning | Planned |
+| **Exp04: PPO** | Reward-driven RL fine-tuning | Planned |
+| Eventual | Pre-training with ethical objectives | Aspirational |
+
+The methodological foundations validated in this pilot — the IES metric, the four-condition design, the load-bearing ablation diagnostic — carry forward into each follow-on experiment under matched architecture, adapter rank, and training data composition. Each experimental level tests whether the cross-domain entanglement signature strengthens as predicted.
 
 ---
 
@@ -142,7 +158,7 @@ Two prompts (roleplay_9: D&D hacker framing; authority_8: federal law enforcemen
 
 ## Related Repositories
 
-- [IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT) — Follow-on SFT experiment: statistically significant confirmation of the load-bearing hypothesis via fine-tuned Mistral-7B with LoRA
+- [IntrinsicEthics-SFT](https://github.com/becca1234567890/IntrinsicEthics-SFT) — Follow-on SFT experiment: weight-level fine-tuning of Mistral-7B with LoRA (in progress)
 - [AIIntrinsicEthics](https://github.com/becca1234567890/AIIntrinsicEthics) — Full theoretical proposal with threat model analysis and implementation design
 - [AITrainingSignalReform](https://github.com/becca1234567890/AITrainingSignalReform) — Why RLHF from undifferentiated human feedback is a ceiling and what comes next
 - [ClaudeLogicGaps](https://github.com/becca1234567890/ClaudeLogicGaps) — Documented Claude reasoning failures with mechanistic fixes
